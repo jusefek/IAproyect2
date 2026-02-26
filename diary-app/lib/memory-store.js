@@ -70,8 +70,19 @@ export function addEntry({ content, aiResponse, tags = [] }) {
 // ── Knowledge Graph Summary ───────────────────────────────────────────────────
 
 export function getKnowledgeSummary() {
-    const entries = getEntries();
-    if (!entries.length) return 'No memories recorded yet.';
+    return getKnowledgeSummaryByEra();
+}
+
+/**
+ * Genera un resumen de conocimiento filtrado por fecha tope.
+ */
+export function getKnowledgeSummaryByEra(yearEnd = null) {
+    const allEntries = getEntries();
+    const entries = yearEnd
+        ? allEntries.filter(e => new Date(e.createdAt).getFullYear() <= yearEnd)
+        : allEntries;
+
+    if (!entries.length) return 'No hay recuerdos en esta época.';
 
     const grouped = {};
     for (const entry of entries) {

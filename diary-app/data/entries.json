@@ -120,6 +120,26 @@
     "createdAt": "2010-09-01T18:45:00.000Z"
   },
   {
+    "id": 1279000000007,
+    "content": "Primeras navidades en Amsterdam. He ido a una fiesta internacional y he probado dulces de medio mundo. Echo de menos el turrón de casa pero he descubierto el Stroopwafel y me he enamorado. Mañana patinaje sobre hielo con los del curso.",
+    "aiResponse": "",
+    "tags": [
+      {
+        "type": "Event",
+        "value": "Navidades en Amsterdam"
+      },
+      {
+        "type": "Sentiment/Trigger",
+        "value": "Añoranza y curiosidad"
+      },
+      {
+        "type": "Entity",
+        "value": "Stroopwafel"
+      }
+    ],
+    "createdAt": "2010-12-24T23:30:00.000Z"
+  },
+  {
     "id": 1420000000007,
     "content": "Llevo tres meses en DEGIRO y cada día aprendo algo nuevo. El mundo de los mercados me engancha. Hoy he entendido cómo funciona el mercado de futuros y me ha parecido alucinante que puedas apostar a que algo baja. Salgo a correr por el parque Vondelpark cuando puedo, que es lo que me mantiene cuerdo aquí.",
     "aiResponse": "",
@@ -162,6 +182,26 @@
       }
     ],
     "createdAt": "2015-02-22T16:30:00.000Z"
+  },
+  {
+    "id": 1424000000009,
+    "content": "Hoy he ido al Rijksmuseum por cuarta vez. Cada vez que voy me quedo embobado con 'La ronda de noche'. Me hace pensar en lo que perdura a través de los siglos. Mi trabajo en bolsa es tan efímero... a veces necesito algo sólido como el arte.",
+    "aiResponse": "",
+    "tags": [
+      {
+        "type": "Entity",
+        "value": "Rijksmuseum"
+      },
+      {
+        "type": "Sentiment/Trigger",
+        "value": "Inspiración"
+      },
+      {
+        "type": "Core Belief",
+        "value": "El arte es sólido frente a lo efímero"
+      }
+    ],
+    "createdAt": "2015-03-15T14:20:00.000Z"
   },
   {
     "id": 1425000000009,
@@ -246,6 +286,26 @@
       }
     ],
     "createdAt": "2015-10-05T19:00:00.000Z"
+  },
+  {
+    "id": 1435000000013,
+    "content": "Laura y yo hemos ido a ver los molinos de Zaanse Schans. Hacía un viento horrible pero nos hemos reído mucho. Me gusta pasar tiempo con ella, me hace sentir que Amsterdam es un poco más mi hogar.",
+    "aiResponse": "",
+    "tags": [
+      {
+        "type": "Entity",
+        "value": "Laura"
+      },
+      {
+        "type": "Entity",
+        "value": "Zaanse Schans"
+      },
+      {
+        "type": "Sentiment/Trigger",
+        "value": "Sentimiento de hogar"
+      }
+    ],
+    "createdAt": "2015-11-20T17:45:00.000Z"
   },
   {
     "id": 1580000000013,
@@ -358,6 +418,26 @@
       }
     ],
     "createdAt": "2020-10-10T23:00:00.000Z"
+  },
+  {
+    "id": 1595000000019,
+    "content": "Empaquetar la vida en cajas no es fácil. He encontrado fotos de mis primeros meses aquí y me he dado cuenta de cuánto he cambiado. Me voy de Amsterdam siendo una persona totalmente distinta a la que llegó.",
+    "aiResponse": "",
+    "tags": [
+      {
+        "type": "Event",
+        "value": "Mudanza"
+      },
+      {
+        "type": "Sentiment/Trigger",
+        "value": "Nostalgia"
+      },
+      {
+        "type": "Core Belief",
+        "value": "He cambiado mucho"
+      }
+    ],
+    "createdAt": "2020-12-15T18:00:00.000Z"
   },
   {
     "id": 1771687445210,
@@ -538,7 +618,7 @@
   {
     "id": 1771867592847,
     "content": "Hola hoy esta siendo muy buen dia",
-    "aiResponse": "Hola Jose, ¡qué bien que hoy esté siendo un buen día! ¿Hay algo en particular que lo haga especial?\n",
+    "aiResponse": "Hola Jose, ¡qué bien que hoy esté siendo un buen día! ¿ Hay algo en particular que lo haga especial?\n",
     "tags": [
       {
         "type": "Sentiment/Trigger",

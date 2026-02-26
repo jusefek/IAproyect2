@@ -2,7 +2,7 @@
  * api/past-self.js
  */
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { getProfile, getKnowledgeSummary, getEntries, getEntriesByEra } from '../../lib/memory-store';
+import { getProfile, getKnowledgeSummary, getEntries, getEntriesByEra, getKnowledgeSummaryByEra } from '../../lib/memory-store';
 
 export default async function handler(req, res) {
     // LOGGING PARA DEPURACIÓN
@@ -38,29 +38,32 @@ export default async function handler(req, res) {
         }
 
         const perfil = getProfile();
-        const knowledgeSummary = getKnowledgeSummary();
 
         let systemPrompt;
         if (modoYoPasado) {
-            const entradas = (eraYearStart || eraYearEnd)
-                ? getEntriesByEra(eraYearStart, eraYearEnd)
-                : getEntries();
+            // AISLAMIENTO TEMPORAL: Solo ver lo que existía hasta eraYearEnd
+            const knowledgeSummary = getKnowledgeSummaryByEra(eraYearEnd);
+            const entradas = getEntriesByEra(null, eraYearEnd);
 
-            const entradasStr = entradas
-                .map(e => `[${e.createdAt?.slice(0, 10)}]: ${e.content}`)
-                .join('\n\n');
+            const entradasStr = entradas.length > 0
+                ? entradas.map(e => `[${e.createdAt?.slice(0, 10)}]: ${e.content}`).join('\n\n')
+                : '(Sin diarios en esta época)';
 
             const eraContext = eraLabel
-                ? `\nIMPORTANTE: Estás hablando desde la época "${eraLabel}". No conoces nada de lo que pasó después.\n`
+                ? `\nIMPORTANTE: Estás hablando desde la época "${eraLabel}" (entorno al año ${eraYearEnd}).
+                 COMO REGLA ABSOLUTA: No conoces NADA que haya ocurrido después del año ${eraYearEnd}. 
+                 Si el usuario te pregunta por algo futuro, actúa con confusión o di que no tienes ni idea, manteniendo tu personaje de esa época.\n`
                 : '';
 
             systemPrompt = `NO eres Rocco. Eres el YO PASADO del usuario.${eraContext}
-Habla COMO el usuario mismo. Imita su tono y estilo basándote en sus recuerdos.
-Recuerdos disponibles:
-${entradasStr}
-
-Resumen de vida: ${knowledgeSummary}`;
+ Habla COMO el usuario mismo de esa época. Imita su tono y estilo basándote en sus recuerdos.
+ Recuerdos disponibles hasta ${eraYearEnd}:
+ ${entradasStr}
+ 
+ Conocimiento de vida acumulado hasta ${eraYearEnd}: 
+ ${knowledgeSummary}`;
         } else {
+            const knowledgeSummary = getKnowledgeSummary();
             const recientes = getEntries().slice(-3);
             const entradasStr = recientes
                 .map(e => `[${e.createdAt?.slice(0, 10)}]: ${e.content}`)

@@ -4,28 +4,28 @@ import { motion, AnimatePresence } from 'framer-motion';
 // ── ERAS (sin arco iris, diseño sobrio) ───────────────────────────────────
 const ERAS = [
     {
-        id: '2010', label: 'Juventud', year: '2010',
+        id: '2010', label: 'Juventud', year: '2010', end: 2010,
         avatar: '🧒', avatarBg: '#1e2d3d',
         ring: '#4a7fa0', bubble: 'linear-gradient(145deg,#f2f6fa,#e8f0f7)',
         bubbleBorder: '#b0c8e0', textColor: '#0d2030',
         description: 'Tú a los 18 — curioso, sin límites',
     },
     {
-        id: '2015', label: 'Ámsterdam', year: '2015',
+        id: '2015', label: 'Ámsterdam', year: '2015', end: 2015,
         avatar: '🧑‍🎨', avatarBg: '#2d1e2f',
         ring: '#8a5aa0', bubble: 'linear-gradient(145deg,#f8f2fb,#f0e8f5)',
         bubbleBorder: '#c8a8d8', textColor: '#2a0d32',
         description: 'Tu etapa más creativa',
     },
     {
-        id: '2020', label: 'Confinamiento', year: '2020',
+        id: '2020', label: 'Confinamiento', year: '2020', end: 2020,
         avatar: '🧘', avatarBg: '#1e2d1e',
         ring: '#5a8a5a', bubble: 'linear-gradient(145deg,#f2f8f2,#e8f5e8)',
         bubbleBorder: '#a8d0a8', textColor: '#0d200d',
         description: 'Quietud forzada, crecimiento interior',
     },
     {
-        id: '2026', label: 'Ahora', year: '2026',
+        id: '2026', label: 'Ahora', year: '2026', end: 2026,
         avatar: '🧑‍💻', avatarBg: '#2d1e0d',
         ring: '#a07040', bubble: 'linear-gradient(145deg,#fdf8f0,#f5ecda)',
         bubbleBorder: '#d0a870', textColor: '#200d00',
@@ -33,161 +33,99 @@ const ERAS = [
     },
 ];
 
-// ── Animated SVG Crocodile — side profile ─────────────────────────────────
-function CrocodileFace({ isTalking, size = 200 }) {
-    const W = 290, H = 130;
+// ── Animated SVG Crocodile — Final Pixel-Perfect 2D Mascot ────────────────
+function CrocodileFace({ isTalking, size = 220 }) {
+    const W = 260, H = 140;
     return (
         <motion.div
-            animate={isTalking ? {} : { y: [0, -5, 0] }}
-            transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+            animate={isTalking ? {} : { y: [0, -4, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
             style={{
                 width: size, height: size * (H / W),
-                filter: 'drop-shadow(0 10px 32px rgba(30,110,55,0.6))',
+                filter: 'drop-shadow(0 15px 35px rgba(0,0,0,0.12))',
                 flexShrink: 0,
             }}
         >
-            <svg viewBox={`0 0 ${W} ${H}`} width={size} height={size * (H / W)} style={{ overflow: 'visible' }}>
+            <svg viewBox={`0 -10 ${W} ${H + 20}`} width={size} height={size * (H / W)} style={{ overflow: 'visible' }}>
 
-                {/* ── Ground shadow ── */}
-                <ellipse cx="145" cy="122" rx="105" ry="8" fill="rgba(0,0,0,0.35)" />
+                {/* ── BACK LEGS (Behind everything) ── */}
+                <path d="M 115 112 Q 115 125 125 125 Q 135 125 135 112 Z" fill="#6ba35e" stroke="#000" strokeWidth="3.5" />
+                <path d="M 175 112 Q 175 125 185 125 Q 195 125 195 112 Z" fill="#6ba35e" stroke="#000" strokeWidth="3.5" />
 
-                {/* ── NECK / BODY (left side, croc faces RIGHT) ── */}
-                <ellipse cx="24" cy="78" rx="24" ry="34" fill="#2d7a3a" />
-                <rect x="0" y="52" width="28" height="52" rx="10" fill="#2d7a3a" />
+                {/* ── BELLY (Yellow base) ── */}
+                <path d="M 50 110 Q 145 118 210 105 L 210 114 Q 145 125 50 115 Z" fill="#fdfac3" stroke="#000" strokeWidth="3.5" />
 
-                {/* ── BELLY (lighter) ── */}
-                <path d="M 20 82 Q 100 90 200 80 Q 240 76 268 68 Q 255 78 225 82 Q 165 90 100 88 Q 60 87 20 82 Z"
-                    fill="#4aaa58" opacity="0.6" />
+                {/* ── MAIN BODY (Tail, Body, Head) ── */}
+                <path d="
+                    M 50 115
+                    Q 15 115 10 102 
+                    Q 10 88 50 82
+                    Q 65 72 80 68
+                    Q 100 52 120 50
+                    Q 132 40 142 40
+                    L 158 40
+                    Q 168 40 180 50
+                    Q 210 65 240 68
+                    Q 255 70 255 85
+                    Q 255 105 210 105
+                    Q 145 115 50 115 Z
+                " fill="#6ba35e" stroke="#000" strokeWidth="3.5" />
 
-                {/* ── UPPER JAW — main skull + snout ── */}
-                {/* Skull dome */}
-                <path d="M 20 56 Q 48 24 88 22 Q 128 20 165 32 Q 205 42 242 50 Q 262 54 278 60 Q 274 65 268 64 Q 248 58 215 52 Q 175 44 130 42 Q 90 42 62 48 Q 38 54 22 64 Z"
-                    fill="#3d9848" />
-                {/* Snout – flatter, longer bridge */}
-                <path d="M 88 36 Q 160 30 230 46 Q 255 50 275 58 Q 260 55 235 54 Q 195 48 145 46 Q 105 46 88 50 Z"
-                    fill="#348840" />
+                {/* ── BACK HUMPS (4 wavy lines) ── */}
+                <path d="M 68 76 Q 85 64 105 60 Q 118 48 135 45 Q 155 48 165 60 Q 185 64 200 75" fill="none" stroke="#000" strokeWidth="3.5" />
 
-                {/* ── DORSAL RIDGE BUMPS ── */}
-                {[0, 1, 2, 3, 4, 5].map(i => (
-                    <ellipse key={i}
-                        cx={100 + i * 26} cy={28 + Math.abs(i - 2) * 2.5}
-                        rx="10" ry="6" fill="#2a7832" opacity="0.75"
-                    />
-                ))}
+                {/* ── DETAIL: THE 'W' WRINKLE ── */}
+                <path d="M 115 85 Q 120 80 125 85 Q 130 80 135 85" fill="none" stroke="#000" strokeWidth="2.5" strokeLinecap="round" opacity="0.7" />
 
-                {/* ── SKIN TEXTURE DIAMONDS (side of jaw) ── */}
-                {[0, 1, 2, 3, 4].map(col =>
-                    [0, 1].map(row => (
-                        <polygon key={`${col}-${row}`}
-                            points={`
-                                ${55 + col * 38 + row * 16},${61 + row * 10}
-                                ${63 + col * 38 + row * 16},${57 + row * 10}
-                                ${71 + col * 38 + row * 16},${61 + row * 10}
-                                ${63 + col * 38 + row * 16},${65 + row * 10}
-                            `}
-                            fill="#2d8038" opacity="0.45"
-                        />
-                    ))
-                )}
+                {/* ── UNDERBELLY SEGMENTS ── */}
+                <line x1="100" y1="113" x2="105" y2="123" stroke="#000" strokeWidth="2.5" strokeLinecap="round" opacity="0.8" />
+                <line x1="145" y1="115" x2="150" y2="125" stroke="#000" strokeWidth="2.5" strokeLinecap="round" opacity="0.8" />
+                <line x1="190" y1="113" x2="195" y2="122" stroke="#000" strokeWidth="2.5" strokeLinecap="round" opacity="0.8" />
 
-                {/* ── NOSTRIL at snout tip ── */}
-                <ellipse cx="274" cy="57" rx="6" ry="4" fill="#1a5228" />
-                <ellipse cx="273" cy="56" rx="3" ry="2" fill="#091810" />
+                {/* ── FRONT LEGS ── */}
+                <path d="M 85 115 Q 85 130 95 130 Q 105 130 105 115 Z" fill="#6ba35e" stroke="#000" strokeWidth="3.5" />
+                <path d="M 145 115 Q 145 130 155 130 Q 165 130 165 115 Z" fill="#6ba35e" stroke="#000" strokeWidth="3.5" />
 
-                {/* ── UPPER TEETH (static, visible at jaw line) ── */}
-                {[0, 1, 2, 3, 4, 5, 6].map(i => (
-                    <polygon key={i}
-                        points={`
-                            ${105 + i * 23},62
-                            ${110 + i * 23},52
-                            ${115 + i * 23},62
-                        `}
-                        fill="#f2f0e0"
-                    />
-                ))}
+                {/* ── EYES (High on head) ── */}
+                <g>
+                    {/* Left Eye */}
+                    <circle cx="150" cy="53" r="14" fill="#000" />
+                    <circle cx="156" cy="48" r="5" fill="#fff" />
+                    {/* Right Eye */}
+                    <circle cx="178" cy="53" r="14" fill="#000" />
+                    <circle cx="184" cy="48" r="5" fill="#fff" />
+                </g>
 
-                {/* ── EYE — high on skull, characteristic croc position ── */}
-                {/* Eye socket bump */}
-                <ellipse cx="72" cy="34" rx="18" ry="15" fill="#2d8038" />
-                {/* Sclera */}
-                <circle cx="72" cy="34" r="12" fill="#0c120a" />
-                {/* Iris — golden yellow */}
-                <circle cx="72" cy="34" r="8" fill="#c8a010" />
-                {/* Vertical slit pupil */}
-                <ellipse cx="72" cy="34" rx="2.5" ry="6" fill="#030503" />
-                {/* Eye glint */}
-                <circle cx="68" cy="30" r="2.5" fill="rgba(255,255,255,0.75)" />
-                {/* Eyelid blink */}
-                <motion.ellipse
-                    cx="72" cy="34" rx="12"
-                    animate={{ ry: [0, 0, 0, 0, 0, 0, 12, 0] }}
-                    transition={{ duration: 5.5, repeat: Infinity }}
-                    fill="#2d8038"
-                />
-                {/* Brow ridge */}
-                <path d="M 56 26 Q 72 20 88 26" stroke="#1a5228" strokeWidth="3" fill="none" strokeLinecap="round" />
+                {/* ── PSYCHOLOGIST GLASSES (Gold) ── */}
+                <g opacity="0.8">
+                    <circle cx="150" cy="53" r="18" fill="none" stroke="#d4af37" strokeWidth="2.2" />
+                    <circle cx="178" cy="53" r="18" fill="none" stroke="#d4af37" strokeWidth="2.2" />
+                    <line x1="168" y1="53" x2="160" y2="53" stroke="#d4af37" strokeWidth="2.2" />
+                </g>
 
-                {/* ── LOWER JAW — pivots open from back (x≈28, y≈80) ── */}
+                {/* ── NOSTRILS ── */}
+                <circle cx="235" cy="78" r="3" fill="#000" />
+                <circle cx="248" cy="80" r="3" fill="#000" />
+
+                {/* ── MOUTH (Talking side-view puppet) ── */}
                 <motion.g
                     animate={isTalking
-                        ? { rotate: [0, 18, 5, 20, 7, 16, 0] }
-                        : { rotate: 2 }
+                        ? { y: [0, 5, 0, 5, 0], rotate: [0, 2, -1, 2, 0] }
+                        : { y: 0, rotate: 0 }
                     }
-                    transition={isTalking
-                        ? { duration: 0.4, repeat: Infinity, ease: 'easeInOut' }
-                        : { duration: 0.3 }
-                    }
-                    style={{ transformOrigin: '28px 80px' }}
+                    transition={{ duration: 0.3, repeat: Infinity }}
+                    style={{ transformOrigin: '210px 88px' }}
                 >
-                    {/* Lower jaw body */}
-                    <path d="M 22 78 Q 80 84 155 78 Q 210 74 270 64 Q 254 76 220 82 Q 170 90 105 88 Q 62 87 25 83 Z"
-                        fill="#2a7030" />
-
-                    {/* Inner mouth — red only visible when open */}
-                    <path d="M 32 78 Q 130 76 260 66 Q 245 72 210 76 Q 160 82 100 82 Q 62 81 32 78 Z"
-                        fill="#b02838" opacity="0.9" />
-
-                    {/* Tongue */}
-                    <motion.path
-                        d="M 80 78 Q 160 80 240 70"
-                        stroke="#d03848"
-                        strokeWidth="10"
-                        fill="none"
-                        strokeLinecap="round"
-                        animate={isTalking
-                            ? { strokeWidth: [10, 15, 8, 15, 10], d: ['M 80 78 Q 160 84 240 72', 'M 80 78 Q 160 88 240 74', 'M 80 78 Q 160 84 240 72'] }
-                            : { strokeWidth: 7, d: 'M 95 78 Q 175 80 240 70' }
-                        }
-                        transition={{ duration: 0.4, repeat: Infinity }}
-                    />
-
-                    {/* Lower teeth — iconic offset so they show past upper row */}
-                    {[0, 1, 2, 3, 4, 5].map(i => (
-                        <polygon key={i}
-                            points={`
-                                ${100 + i * 24},78
-                                ${105 + i * 24},88
-                                ${110 + i * 24},78
-                            `}
-                            fill="#f0eedc"
-                        />
-                    ))}
-                    {/* The famous large 4th tooth that sticks up in crocs */}
-                    <polygon points="96,78 103,92 110,78" fill="#f5f3e2" />
+                    <path d="M 205 92 Q 228 98 252 90" fill="none" stroke="#000" strokeWidth="3.5" strokeLinecap="round" />
+                    {/* Tiny tongue */}
+                    <motion.circle cx="230" cy="98" r="4" fill="#f2a2ab" opacity={isTalking ? 0.9 : 0} />
                 </motion.g>
 
-                {/* ── JAW SEAM LINE ── */}
-                <path d="M 30 64 Q 150 60 272 62"
-                    stroke="#1a5228" strokeWidth="1.5" fill="none" opacity="0.55"
-                    strokeDasharray="6, 4"
-                />
 
-            </svg>
-        </motion.div>
+            </svg >
+        </motion.div >
     );
 }
-
-
 
 // ── Avatar de era (Avatares section) ──────────────────────────────────────
 function EraAvatar({ era, isLoading, size = 64 }) {

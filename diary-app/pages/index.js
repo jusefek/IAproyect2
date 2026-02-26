@@ -14,7 +14,7 @@ import PastSelfMode from '../components/PastSelfMode';
 const MODOS = [
   { id: 'diario', icono: '📓', label: 'Mi Diario' },
   { id: 'rocco', icono: '🐊', label: 'Charla con Rocco' },
-  { id: 'pasado', icono: '🕰️', label: 'Mi Yo Pasado' },
+  { id: 'pasado', icono: '🪄', label: 'Avatares' },
 ];
 
 // App name constant

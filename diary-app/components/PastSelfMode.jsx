@@ -1,113 +1,260 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// ── Config por era: cada época tiene su propio avatar y paleta ─────────────
+// ── ERAS (sin arco iris, diseño sobrio) ───────────────────────────────────
 const ERAS = [
     {
-        id: 'all', label: 'Toda mi vida', start: null, end: null,
-        icon: '🌈', avatar: '🧑', avatarBg: 'linear-gradient(135deg,#7b5ea7,#4a3570)',
-        ring: '#9b7fd4', bubble: 'linear-gradient(145deg,#f5f0ff,#ede6ff)',
-        bubbleBorder: '#c5b3f0', textColor: '#2d1d5a',
-        description: 'Todos tus recuerdos',
+        id: '2010', label: 'Juventud', year: '2010',
+        avatar: '🧒', avatarBg: '#1e2d3d',
+        ring: '#4a7fa0', bubble: 'linear-gradient(145deg,#f2f6fa,#e8f0f7)',
+        bubbleBorder: '#b0c8e0', textColor: '#0d2030',
+        description: 'Tú a los 18 — curioso, sin límites',
     },
     {
-        id: '2010', label: 'Juventud (2010)', start: 2010, end: 2010,
-        icon: '🎓', avatar: '🧒', avatarBg: 'linear-gradient(135deg,#3a8fd4,#1a5fa0)',
-        ring: '#6ab3e8', bubble: 'linear-gradient(145deg,#f0f7ff,#e3f0ff)',
-        bubbleBorder: '#aacdf0', textColor: '#0d2d50',
-        description: 'Tú, joven y curioso',
+        id: '2015', label: 'Ámsterdam', year: '2015',
+        avatar: '🧑‍🎨', avatarBg: '#2d1e2f',
+        ring: '#8a5aa0', bubble: 'linear-gradient(145deg,#f8f2fb,#f0e8f5)',
+        bubbleBorder: '#c8a8d8', textColor: '#2a0d32',
+        description: 'Tu etapa más creativa',
     },
     {
-        id: '2015', label: 'Ámsterdam (2015)', start: 2015, end: 2015,
-        icon: '🌷', avatar: '🧑‍🎨', avatarBg: 'linear-gradient(135deg,#d44a8a,#9c2060)',
-        ring: '#f08abd', bubble: 'linear-gradient(145deg,#fff0f8,#fce3f0)',
-        bubbleBorder: '#f0aad0', textColor: '#4a0a28',
-        description: 'Tu era más creativa',
+        id: '2020', label: 'Confinamiento', year: '2020',
+        avatar: '🧘', avatarBg: '#1e2d1e',
+        ring: '#5a8a5a', bubble: 'linear-gradient(145deg,#f2f8f2,#e8f5e8)',
+        bubbleBorder: '#a8d0a8', textColor: '#0d200d',
+        description: 'Quietud forzada, crecimiento interior',
     },
     {
-        id: '2020', label: 'Confinamiento (2020)', start: 2020, end: 2020,
-        icon: '🏠', avatar: '🧘', avatarBg: 'linear-gradient(135deg,#5a8a6a,#2d5a3a)',
-        ring: '#8abf9a', bubble: 'linear-gradient(145deg,#f0f8f2,#e3f2e8)',
-        bubbleBorder: '#aad0b8', textColor: '#102818',
-        description: 'Quietud y reflexión',
-    },
-    {
-        id: '2026', label: 'Valencia Hoy (2026)', start: 2026, end: 2026,
-        icon: '☀️', avatar: '🧑‍💻', avatarBg: 'linear-gradient(135deg,#d4842a,#a05010)',
-        ring: '#e8a860', bubble: 'linear-gradient(145deg,#fff8f0,#fdf0e0)',
-        bubbleBorder: '#e8c890', textColor: '#3a1a00',
-        description: 'Quién eres ahora',
+        id: '2026', label: 'Ahora', year: '2026',
+        avatar: '🧑‍💻', avatarBg: '#2d1e0d',
+        ring: '#a07040', bubble: 'linear-gradient(145deg,#fdf8f0,#f5ecda)',
+        bubbleBorder: '#d0a870', textColor: '#200d00',
+        description: 'Quién eres hoy',
     },
 ];
 
-// ── Animate breathe for Rocco ──────────────────────────────────────────────
-const breatheVariants = {
-    idle: { scale: [1, 1.05, 1], transition: { duration: 3.5, repeat: Infinity, ease: 'easeInOut' } },
-    loading: {
-        scale: [1, 1.15, 0.92, 1.1, 1],
-        y: [0, -8, 0, -5, 0],
-        rotate: [0, -3, 3, -2, 0],
-        transition: { duration: 0.65, repeat: Infinity },
-    },
-};
-
-// ── Rocco Avatar ───────────────────────────────────────────────────────────
-function RoccoAvatar({ isLoading, size = 64 }) {
+// ── Animated SVG Crocodile ─────────────────────────────────────────────────
+function CrocodileFace({ isTalking, size = 120 }) {
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+        <motion.div
+            animate={isTalking
+                ? { scale: [1, 1.04, 1, 1.04, 1] }
+                : { scale: [1, 1.015, 1] }
+            }
+            transition={{
+                duration: isTalking ? 0.38 : 3.5,
+                repeat: Infinity,
+                ease: 'easeInOut',
+            }}
+            style={{ width: size, height: size, flexShrink: 0, filter: 'drop-shadow(0 8px 24px rgba(40,120,60,0.45))' }}
+        >
+            <svg viewBox="0 0 120 120" width={size} height={size} style={{ overflow: 'visible' }}>
+                {/* ── Shadow ── */}
+                <ellipse cx="60" cy="115" rx="35" ry="6" fill="rgba(0,0,0,0.25)" />
+
+                {/* ── Neck ── */}
+                <rect x="38" y="88" width="44" height="22" rx="8" fill="#2d7a3a" />
+
+                {/* ── HEAD body ── */}
+                <ellipse cx="60" cy="68" rx="42" ry="30" fill="#3a9048" />
+
+                {/* ── Top jaw ── */}
+                <path d="M18 62 Q30 30 60 28 Q90 30 102 62 Q85 56 60 54 Q35 56 18 62Z" fill="#3a9048" />
+
+                {/* ── Snout top ── */}
+                <ellipse cx="60" cy="46" rx="26" ry="14" fill="#2d7a3a" />
+
+                {/* ── Nostrils ── */}
+                <ellipse cx="52" cy="40" rx="4" ry="3" fill="#1a5228" />
+                <ellipse cx="68" cy="40" rx="4" ry="3" fill="#1a5228" />
+                <ellipse cx="52" cy="40" rx="2" ry="1.5" fill="#0d2a14" />
+                <ellipse cx="68" cy="40" rx="2" ry="1.5" fill="#0d2a14" />
+
+                {/* ── Mouth gap / teeth area ── */}
+                {/* Lower jaw — this is what animates */}
+                <motion.g
+                    animate={isTalking
+                        ? { rotate: [0, 14, 3, 16, 5, 12, 0], originX: '60px', originY: '68px' }
+                        : { rotate: 0 }
+                    }
+                    transition={isTalking
+                        ? { duration: 0.35, repeat: Infinity, ease: 'easeInOut' }
+                        : {}
+                    }
+                    style={{ transformOrigin: '60px 68px' }}
+                >
+                    {/* Lower jaw shape */}
+                    <path d="M22 68 Q35 90 60 92 Q85 90 98 68 Q80 72 60 73 Q40 72 22 68Z" fill="#2d7a3a" />
+                    {/* Inner mouth */}
+                    <motion.path
+                        d={isTalking ? "M28 68 Q45 84 60 86 Q75 84 92 68 Q76 70 60 71 Q44 70 28 68Z" : "M28 68 Q45 75 60 76 Q75 75 92 68 Q76 70 60 70 Q44 70 28 68Z"}
+                        fill="#c0303a"
+                        transition={{ duration: 0.18 }}
+                    />
+                    {/* Tongue */}
+                    <motion.ellipse
+                        cx="60"
+                        cy={isTalking ? "78" : "72"}
+                        rx="14" ry="6"
+                        fill="#e05060"
+                        transition={{ duration: 0.18 }}
+                    />
+                    {/* Lower teeth */}
+                    <polygon points="35,69 38,80 41,69" fill="#f0f0e0" />
+                    <polygon points="47,70 50,82 53,70" fill="#f0f0e0" />
+                    <polygon points="67,70 70,82 73,70" fill="#f0f0e0" />
+                    <polygon points="79,69 82,80 85,69" fill="#f0f0e0" />
+                </motion.g>
+
+                {/* ── Upper teeth (static) ── */}
+                <polygon points="35,63 38,52 41,63" fill="#f5f5e8" />
+                <polygon points="48,60 51,49 54,60" fill="#f5f5e8" />
+                <polygon points="66,60 69,49 72,60" fill="#f5f5e8" />
+                <polygon points="79,63 82,52 85,63" fill="#f5f5e8" />
+
+                {/* ── Eyes ── */}
+                {/* Left eye */}
+                <circle cx="38" cy="54" r="10" fill="#2d7a3a" />
+                <circle cx="38" cy="54" r="8" fill="#1a1a0a" />
+                <circle cx="38" cy="54" r="5" fill="#f5c842" />
+                <circle cx="38" cy="54" r="3" fill="#0d0d05" />
+                <circle cx="36" cy="52" r="1.2" fill="rgba(255,255,255,0.8)" />
+                {/* Eyelid blink */}
+                <motion.rect
+                    x="29" y="45"
+                    width="18" rx="4"
+                    animate={{ height: [0, 0, 0, 0, 0, 0, 16, 0] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                    fill="#2d7a3a"
+                />
+
+                {/* Right eye */}
+                <circle cx="82" cy="54" r="10" fill="#2d7a3a" />
+                <circle cx="82" cy="54" r="8" fill="#1a1a0a" />
+                <circle cx="82" cy="54" r="5" fill="#f5c842" />
+                <circle cx="82" cy="54" r="3" fill="#0d0d05" />
+                <circle cx="80" cy="52" r="1.2" fill="rgba(255,255,255,0.8)" />
+                {/* Eyelid blink (offset) */}
+                <motion.rect
+                    x="73" y="45"
+                    width="18" rx="4"
+                    animate={{ height: [0, 0, 0, 0, 0, 0, 16, 0] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 0.08 }}
+                    fill="#2d7a3a"
+                />
+
+                {/* ── Eyebrow ridges ── */}
+                <path d="M30 46 Q38 42 46 46" stroke="#1a5228" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                <path d="M74 46 Q82 42 90 46" stroke="#1a5228" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+
+                {/* ── Scales on top ── */}
+                <ellipse cx="50" cy="35" rx="6" ry="3.5" fill="#2d8040" opacity="0.6" />
+                <ellipse cx="60" cy="33" rx="6" ry="3.5" fill="#2d8040" opacity="0.6" />
+                <ellipse cx="70" cy="35" rx="6" ry="3.5" fill="#2d8040" opacity="0.6" />
+            </svg>
+        </motion.div>
+    );
+}
+
+// ── Avatar de era (Avatares section) ──────────────────────────────────────
+function EraAvatar({ era, isLoading, size = 64 }) {
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
             <motion.div
-                variants={breatheVariants}
-                animate={isLoading ? 'loading' : 'idle'}
+                animate={isLoading ? { scale: [1, 1.07, 0.96, 1.07, 1] } : { scale: 1 }}
+                transition={isLoading ? { duration: 0.75, repeat: Infinity } : {}}
                 style={{
                     width: size, height: size, borderRadius: '50%',
-                    overflow: 'hidden',
-                    border: `3px solid ${isLoading ? '#4daa60' : '#3a8f50'}`,
-                    boxShadow: `0 0 0 3px rgba(74,185,100,0.2), 0 6px 24px rgba(40,120,60,0.4)`,
-                    background: '#1a3a22',
-                    flexShrink: 0,
-                    position: 'relative',
+                    background: era.avatarBg,
+                    border: `2.5px solid ${era.ring}`,
+                    boxShadow: `0 0 0 2px ${era.ring}30, 0 4px 16px rgba(0,0,0,0.3)`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: size > 50 ? '1.8rem' : '1.1rem', flexShrink: 0,
                 }}
             >
-                <img src="/rocco.png" alt="Rocco" style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    onError={e => { e.target.style.display = 'none'; e.target.parentNode.innerHTML = '<span style="font-size:2rem;display:flex;align-items:center;justify-content:center;width:100%;height:100%">🐊</span>'; }}
-                />
+                {era.avatar}
             </motion.div>
             {size >= 48 && (
-                <span style={{ fontFamily: 'Caveat, cursive', fontSize: '0.8rem', color: '#4daa60', fontWeight: 700, letterSpacing: '0.05em' }}>
-                    Rocco
+                <span style={{
+                    fontFamily: 'Inter, sans-serif', fontSize: '0.7rem', fontWeight: 600,
+                    color: era.ring, letterSpacing: '0.04em', textTransform: 'uppercase',
+                }}>
+                    {era.label}
                 </span>
             )}
         </div>
     );
 }
 
-// ── Era Avatar (Mi Yo Pasado) ──────────────────────────────────────────────
-function EraAvatar({ era, isLoading, size = 64 }) {
+// ── Avatar development % (based on profile fill + entries) ────────────────
+function AvatarProgress({ perfil, entryCount = 0 }) {
+    const fields = [
+        { key: 'username', label: 'Identidad', pts: 10 },
+        { key: 'alias', label: 'Alias', pts: 10 },
+        { key: 'ocupacion', label: 'Ocupación', pts: 10 },
+        { key: 'circulo', label: 'Círculo social', pts: 10 },
+        { key: 'foco', label: 'Foco vital', pts: 10 },
+        { key: 'onboardingComplete', label: 'Perfil base', pts: 20 },
+    ];
+    const fieldPts = fields.reduce((acc, f) => acc + (perfil?.[f.key] ? f.pts : 0), 0);
+    const entryPts = Math.min(30, Math.floor(entryCount * 3)); // +3% per entry, max 30
+    const total = Math.min(100, fieldPts + entryPts);
+
+    const getColor = (pct) => {
+        if (pct < 33) return '#6a8a7a';
+        if (pct < 66) return '#8a7a60';
+        return '#7a8a6a';
+    };
+    const color = getColor(total);
+    const label = total < 20 ? 'Embrión' : total < 40 ? 'Boceto' : total < 60 ? 'Emergiendo' : total < 80 ? 'Formado' : total < 100 ? 'Maduro' : 'Completo';
+
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-            <motion.div
-                animate={isLoading
-                    ? { scale: [1, 1.1, 0.95, 1.08, 1], rotate: [0, -2, 2, -1, 0] }
-                    : { scale: 1 }
-                }
-                transition={isLoading ? { duration: 0.8, repeat: Infinity } : {}}
-                style={{
-                    width: size, height: size, borderRadius: '50%',
-                    background: era.avatarBg,
-                    boxShadow: `0 0 0 3px ${era.ring}55, 0 6px 24px ${era.ring}44`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    flexShrink: 0,
-                    fontSize: size > 50 ? '2rem' : '1.2rem',
-                    border: `3px solid ${era.ring}`,
-                }}
-            >
-                {era.avatar}
-            </motion.div>
-            {size >= 48 && (
-                <span style={{ fontFamily: 'Caveat, cursive', fontSize: '0.75rem', color: era.ring, fontWeight: 700, textAlign: 'center', maxWidth: '80px', lineHeight: 1.2 }}>
-                    {era.icon} {era.label.split('(')[0].trim()}
+        <div style={{
+            background: 'rgba(255,255,255,0.08)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '12px',
+            padding: '14px 18px',
+            marginBottom: '20px',
+        }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.72rem', color: '#9a9a8a', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    Desarrollo del avatar
                 </span>
-            )}
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.72rem', fontWeight: 700, color, letterSpacing: '0.05em' }}>
+                    {label} · {total}%
+                </span>
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '999px', height: '6px', overflow: 'hidden' }}>
+                <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${total}%` }}
+                    transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ height: '100%', borderRadius: '999px', background: `linear-gradient(90deg, ${color}88, ${color})` }}
+                />
+            </div>
+            <div style={{ display: 'flex', gap: '6px', marginTop: '10px', flexWrap: 'wrap' }}>
+                {fields.map(f => (
+                    <span key={f.key} style={{
+                        fontFamily: 'Inter, sans-serif', fontSize: '0.63rem',
+                        color: perfil?.[f.key] ? color : '#4a4a3a',
+                        background: perfil?.[f.key] ? `${color}18` : 'rgba(255,255,255,0.04)',
+                        border: `1px solid ${perfil?.[f.key] ? color + '40' : 'rgba(255,255,255,0.08)'}`,
+                        borderRadius: '999px', padding: '2px 8px',
+                    }}>
+                        {perfil?.[f.key] ? '✓' : '○'} {f.label}
+                    </span>
+                ))}
+                {entryCount > 0 && (
+                    <span style={{
+                        fontFamily: 'Inter, sans-serif', fontSize: '0.63rem',
+                        color, background: `${color}18`,
+                        border: `1px solid ${color}40`,
+                        borderRadius: '999px', padding: '2px 8px',
+                    }}>
+                        ✓ {entryCount} {entryCount === 1 ? 'entrada' : 'entradas'} (+{entryPts}%)
+                    </span>
+                )}
+            </div>
         </div>
     );
 }
@@ -119,18 +266,17 @@ function Burbuja({ msg, modoYoPasado, eraActiva }) {
     if (esIA && modoYoPasado) {
         return (
             <motion.div
-                initial={{ opacity: 0, x: -16 }}
+                initial={{ opacity: 0, x: -14 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '20px', gap: '10px', alignItems: 'flex-end' }}
+                style={{ display: 'flex', marginBottom: '18px', gap: '10px', alignItems: 'flex-end' }}
             >
                 <div style={{
-                    width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
+                    width: 34, height: 34, borderRadius: '50%', flexShrink: 0,
                     background: eraActiva.avatarBg,
                     border: `2px solid ${eraActiva.ring}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '1.1rem',
-                    boxShadow: `0 2px 10px ${eraActiva.ring}44`,
+                    fontSize: '1rem',
                 }}>
                     {eraActiva.avatar}
                 </div>
@@ -139,17 +285,14 @@ function Burbuja({ msg, modoYoPasado, eraActiva }) {
                     background: eraActiva.bubble,
                     border: `1px solid ${eraActiva.bubbleBorder}`,
                     borderLeft: `3px solid ${eraActiva.ring}`,
-                    borderRadius: '4px 18px 18px 4px',
-                    padding: '14px 18px',
-                    boxShadow: `0 3px 16px rgba(0,0,0,0.07)`,
+                    borderRadius: '4px 16px 16px 4px',
+                    padding: '13px 17px',
+                    boxShadow: '0 2px 14px rgba(0,0,0,0.07)',
                 }}>
                     <p style={{
                         fontFamily: 'Playfair Display, Georgia, serif',
-                        fontStyle: 'italic',
-                        fontSize: '1.05rem',
-                        lineHeight: 1.65,
-                        color: eraActiva.textColor,
-                        margin: 0,
+                        fontStyle: 'italic', fontSize: '1rem', lineHeight: 1.65,
+                        color: eraActiva.textColor, margin: 0,
                     }}>
                         {msg.content}
                     </p>
@@ -158,40 +301,36 @@ function Burbuja({ msg, modoYoPasado, eraActiva }) {
         );
     }
 
+    // Rocco bubble
     if (esIA && !modoYoPasado) {
         return (
             <motion.div
-                initial={{ opacity: 0, x: -16 }}
+                initial={{ opacity: 0, x: -14 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '20px', gap: '10px', alignItems: 'flex-end' }}
+                style={{ display: 'flex', marginBottom: '18px', gap: '10px', alignItems: 'flex-end' }}
             >
                 <div style={{
-                    width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
-                    overflow: 'hidden', border: '2px solid #3a8f50',
-                    background: '#1a3a22',
-                    boxShadow: '0 2px 10px rgba(40,120,60,0.35)',
+                    width: 34, height: 34, borderRadius: '50%', flexShrink: 0,
+                    background: '#1a3a22', border: '2px solid #3a8f50',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '1.2rem',
                 }}>
-                    <img src="/rocco.png" alt="Rocco" style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        onError={e => { e.target.style.display = 'none'; e.target.parentNode.innerHTML = '<span style="font-size:1.2rem;display:flex;align-items:center;justify-content:center;width:100%;height:100%">🐊</span>'; }}
-                    />
+                    🐊
                 </div>
                 <div style={{
                     maxWidth: '72%',
-                    background: 'linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08))',
+                    background: 'rgba(255,255,255,0.08)',
                     backdropFilter: 'blur(12px)',
-                    border: '1px solid rgba(74,185,100,0.25)',
+                    border: '1px solid rgba(74,185,100,0.2)',
                     borderLeft: '3px solid #4daa60',
-                    borderRadius: '4px 18px 18px 4px',
-                    padding: '14px 18px',
-                    boxShadow: '0 3px 20px rgba(0,0,0,0.2)',
+                    borderRadius: '4px 16px 16px 4px',
+                    padding: '13px 17px',
+                    boxShadow: '0 3px 18px rgba(0,0,0,0.2)',
                 }}>
                     <p style={{
-                        fontFamily: 'Caveat, cursive',
-                        fontSize: '1.2rem',
-                        lineHeight: 1.55,
-                        color: '#e8f5e8',
-                        margin: 0,
+                        fontFamily: 'Caveat, cursive', fontSize: '1.2rem',
+                        lineHeight: 1.5, color: '#d8f0d8', margin: 0,
                     }}>
                         {msg.content}
                     </p>
@@ -200,36 +339,35 @@ function Burbuja({ msg, modoYoPasado, eraActiva }) {
         );
     }
 
-    // Usuario
+    // User bubble
     return (
         <motion.div
-            initial={{ opacity: 0, x: 16 }}
+            initial={{ opacity: 0, x: 14 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', gap: '10px', marginBottom: '20px' }}
+            style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', gap: '8px', marginBottom: '18px' }}
         >
             <div style={{
                 maxWidth: '72%',
                 background: modoYoPasado
-                    ? `${eraActiva.avatarBg}`
-                    : 'linear-gradient(135deg, #d4a045, #c8701a)',
-                borderRadius: '18px 4px 18px 18px',
-                padding: '12px 18px',
+                    ? `linear-gradient(135deg, ${eraActiva.ring}cc, ${eraActiva.ring}88)`
+                    : 'linear-gradient(135deg, #3a8f50, #2a6a38)',
+                borderRadius: '16px 4px 16px 16px',
+                padding: '12px 17px',
                 boxShadow: modoYoPasado
-                    ? `0 4px 18px ${eraActiva.ring}55`
-                    : '0 4px 18px rgba(200,113,26,0.4)',
+                    ? `0 4px 16px ${eraActiva.ring}44`
+                    : '0 4px 16px rgba(40,120,60,0.4)',
             }}>
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.95rem', lineHeight: 1.55, color: '#fff', margin: 0 }}>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.93rem', lineHeight: 1.55, color: '#fff', margin: 0 }}>
                     {msg.content}
                 </p>
             </div>
             <div style={{
-                width: 32, height: 32, borderRadius: '50%',
-                background: modoYoPasado ? eraActiva.avatarBg : 'linear-gradient(135deg,#d4a045,#8a5e1a)',
+                width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+                background: modoYoPasado ? eraActiva.avatarBg : '#1a3a22',
+                border: `2px solid ${modoYoPasado ? eraActiva.ring : '#3a8f50'}`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '1rem', flexShrink: 0,
-                border: `2px solid ${modoYoPasado ? eraActiva.ring : '#d4a045'}`,
-                boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
+                fontSize: '0.9rem',
             }}>
                 🧑
             </div>
@@ -237,46 +375,34 @@ function Burbuja({ msg, modoYoPasado, eraActiva }) {
     );
 }
 
-// ── Typing indicator ───────────────────────────────────────────────────────
+// ── Typing dots ────────────────────────────────────────────────────────────
 function TypingIndicator({ modoYoPasado, eraActiva }) {
     const color = modoYoPasado ? eraActiva.ring : '#4daa60';
     return (
         <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
             style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}
         >
             <div style={{
-                width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+                width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
                 background: modoYoPasado ? eraActiva.avatarBg : '#1a3a22',
                 border: `2px solid ${color}`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '1rem',
-                overflow: modoYoPasado ? 'visible' : 'hidden',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.9rem',
             }}>
-                {modoYoPasado ? eraActiva.avatar : (
-                    <img src="/rocco.png" alt="Rocco" style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        onError={e => { e.target.style.display = 'none'; e.target.parentNode.innerHTML = '🐊'; }}
-                    />
-                )}
+                {modoYoPasado ? eraActiva.avatar : '🐊'}
             </div>
             <div style={{
-                background: modoYoPasado
-                    ? `${eraActiva.bubble}`
-                    : 'rgba(255,255,255,0.12)',
+                background: modoYoPasado ? eraActiva.bubble : 'rgba(255,255,255,0.1)',
                 backdropFilter: 'blur(8px)',
                 border: `1px solid ${color}33`,
-                borderRadius: '20px',
-                padding: '10px 18px',
-                display: 'flex', gap: '6px', alignItems: 'center',
+                borderRadius: '20px', padding: '10px 16px',
+                display: 'flex', gap: '5px', alignItems: 'center',
             }}>
                 {[0, 1, 2].map(i => (
-                    <motion.span
-                        key={i}
-                        animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
-                        transition={{ duration: 0.7, repeat: Infinity, delay: i * 0.18 }}
-                        style={{ fontSize: '0.85rem', color }}
+                    <motion.span key={i}
+                        animate={{ y: [0, -6, 0], opacity: [0.4, 1, 0.4] }}
+                        transition={{ duration: 0.65, repeat: Infinity, delay: i * 0.16 }}
+                        style={{ fontSize: '0.8rem', color }}
                     >●</motion.span>
                 ))}
             </div>
@@ -284,7 +410,7 @@ function TypingIndicator({ modoYoPasado, eraActiva }) {
     );
 }
 
-// ── Main component ─────────────────────────────────────────────────────────
+// ── MAIN COMPONENT ─────────────────────────────────────────────────────────
 export default function PastSelfMode({ entradaGuardada, perfil, onVolver, modoYoPasado = false }) {
     const [mensajes, setMensajes] = useState([]);
     const [input, setInput] = useState('');
@@ -292,31 +418,18 @@ export default function PastSelfMode({ entradaGuardada, perfil, onVolver, modoYo
     const [iaEscribe, setIaEscribe] = useState(false);
     const [eraActiva, setEraActiva] = useState(ERAS[0]);
     const [error, setError] = useState('');
+    const [entryCount, setEntryCount] = useState(0);
     const bottomRef = useRef(null);
     const inputRef = useRef(null);
 
     const hoy = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
 
-    // ── Theming ──────────────────────────────────────────────────────────
-    const roccoTheme = {
-        bg: 'linear-gradient(160deg, #0d1a0f 0%, #132218 40%, #0a1a0e 100%)',
-        headerBg: 'rgba(10,30,14,0.75)',
-        headerBorder: 'rgba(74,185,100,0.2)',
-        inputBg: 'rgba(255,255,255,0.07)',
-        inputBorder: 'rgba(74,185,100,0.25)',
-        accentColor: '#4daa60',
-        sendBg: 'linear-gradient(135deg,#3a8f50,#2a6a38)',
-    };
-    const pastTheme = {
-        bg: 'linear-gradient(160deg, #fdf8f0 0%, #f5ecda 50%, #ede0c4 100%)',
-        headerBg: 'rgba(255,252,245,0.8)',
-        headerBorder: eraActiva.bubbleBorder,
-        inputBg: 'rgba(255,255,255,0.75)',
-        inputBorder: eraActiva.bubbleBorder,
-        accentColor: eraActiva.ring,
-        sendBg: eraActiva.avatarBg,
-    };
-    const theme = modoYoPasado ? pastTheme : roccoTheme;
+    // Fetch entry count for avatar progress
+    useEffect(() => {
+        if (modoYoPasado) {
+            fetch('/api/entries').then(r => r.json()).then(e => setEntryCount(e?.length || 0)).catch(() => { });
+        }
+    }, [modoYoPasado]);
 
     const llamarApi = useCallback(async (message, history) => {
         const apiKey = localStorage.getItem('gemini_api_key') || '';
@@ -333,19 +446,19 @@ export default function PastSelfMode({ entradaGuardada, perfil, onVolver, modoYo
 
     const iniciarConversacion = useCallback(async (entrada) => {
         const msgInicio = modoYoPasado
-            ? `El usuario quiere hablar con su yo pasado de la época ${eraActiva.label}. Habla en primera persona, como si fueras ese yo de entonces. Sin presentaciones formales, simplemente empieza a recordar algo de esa época y pregunta qué quiere explorar.`
+            ? `El usuario quiere hablar con su yo de la época "${eraActiva.label} (${eraActiva.year})". Habla en primera persona como ese yo de entonces. Empieza evocando ese tiempo directamente.`
             : entrada
-                ? `Reacciona a esto que acabo de escribir en mi diario: "${entrada.content.slice(0, 300)}". Reacciona directamente. Sin presentarte. Sin formalismos.`
-                : 'Hola. Aquí estoy. Cuéntame algo.';
+                ? `Reacciona a esto que acabo de escribir en mi diario: "${entrada.content.slice(0, 300)}". Reacciona directamente. Sin presentarte.`
+                : 'Hola. Cuéntame algo.';
 
         setMensajes([]); setError(''); setCargando(true); setIaEscribe(true);
         try {
-            const respuesta = await llamarApi(msgInicio, []);
-            setMensajes([{ role: 'assistant', content: respuesta }]);
+            const r = await llamarApi(msgInicio, []);
+            setMensajes([{ role: 'assistant', content: r }]);
         } catch (err) {
             setError(err.message === 'NO_API_KEY'
-                ? '⚠️ Añade tu clave API de Gemini con el botón 🔑 (abajo a la derecha).'
-                : `⚠️ ${err.message || 'Error al conectar.'}`);
+                ? '⚠️ Añade tu clave API con el botón 🔑.'
+                : `⚠️ ${err.message}`);
         } finally { setCargando(false); setIaEscribe(false); inputRef.current?.focus(); }
     }, [modoYoPasado, eraActiva, llamarApi]);
 
@@ -355,213 +468,253 @@ export default function PastSelfMode({ entradaGuardada, perfil, onVolver, modoYo
     const enviarMensaje = async () => {
         const texto = input.trim();
         if (!texto || cargando) return;
-        const nuevosMensajes = [...mensajes, { role: 'user', content: texto }];
-        setMensajes(nuevosMensajes); setInput(''); setError('');
-        setCargando(true); setIaEscribe(true);
+        setMensajes(prev => [...prev, { role: 'user', content: texto }]);
+        setInput(''); setError(''); setCargando(true); setIaEscribe(true);
         try {
-            const respuesta = await llamarApi(texto, mensajes);
-            setMensajes(prev => [...prev, { role: 'assistant', content: respuesta }]);
+            const r = await llamarApi(texto, mensajes);
+            setMensajes(prev => [...prev, { role: 'assistant', content: r }]);
         } catch (err) {
-            setMensajes(prev => [...prev, { role: 'assistant', content: err.message === 'NO_API_KEY' ? '⚠️ Clave API no configurada.' : `⚠️ ${err.message}` }]);
+            setMensajes(prev => [...prev, { role: 'assistant', content: `⚠️ ${err.message}` }]);
         } finally { setCargando(false); setIaEscribe(false); inputRef.current?.focus(); }
     };
 
     const handleKey = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviarMensaje(); } };
 
-    return (
-        <div style={{ minHeight: 'calc(100vh - 57px)', display: 'flex', flexDirection: 'column', background: theme.bg, transition: 'background 0.5s' }}>
+    // ── ROCCO LAYOUT ─────────────────────────────────────────────────────
+    if (!modoYoPasado) {
+        return (
+            <div style={{ minHeight: 'calc(100vh - 57px)', display: 'flex', flexDirection: 'column', background: 'linear-gradient(160deg,#080f09 0%,#0d1a0f 50%,#080f09 100%)' }}>
 
-            {/* ── HERO HEADER ──────────────────────────────────────────── */}
+                {/* Hero area with animated croc */}
+                <div style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center',
+                    padding: '28px 24px 18px',
+                    borderBottom: '1px solid rgba(74,185,100,0.15)',
+                    background: 'rgba(0,0,0,0.2)',
+                }}>
+                    <CrocodileFace isTalking={iaEscribe} size={130} />
+                    <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        style={{ textAlign: 'center', marginTop: '12px' }}
+                    >
+                        <h2 style={{
+                            fontFamily: 'Playfair Display, Georgia, serif',
+                            fontSize: '1.4rem', fontWeight: 600,
+                            color: '#c8f0c8', margin: 0, letterSpacing: '-0.01em',
+                        }}>
+                            Rocco
+                        </h2>
+                        <p style={{
+                            fontFamily: 'Inter, sans-serif', fontSize: '0.65rem',
+                            color: '#4daa6088', textTransform: 'uppercase',
+                            letterSpacing: '0.2em', margin: '4px 0 0',
+                        }}>
+                            {iaEscribe ? '— hablando —' : hoy}
+                        </p>
+                    </motion.div>
+                </div>
+
+                {/* Chat */}
+                <div style={{ flex: 1, overflowY: 'auto', padding: '24px 20px' }}>
+                    <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+                        {entradaGuardada && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                                style={{
+                                    background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(8px)',
+                                    border: '1px solid rgba(74,185,100,0.18)', borderLeft: '3px solid #3a8f50',
+                                    borderRadius: '4px 12px 12px 4px', padding: '13px 17px', marginBottom: '24px',
+                                }}
+                            >
+                                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.57rem', textTransform: 'uppercase', letterSpacing: '0.16em', color: '#4daa60', marginBottom: '6px' }}>
+                                    📖 Tu entrada de hoy
+                                </p>
+                                <p style={{
+                                    fontFamily: 'Playfair Display, Georgia, serif', fontSize: '0.9rem',
+                                    lineHeight: 1.65, color: '#a8c8a8', margin: 0,
+                                    display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+                                }}>
+                                    {entradaGuardada.content}
+                                </p>
+                            </motion.div>
+                        )}
+                        {error && (
+                            <div style={{ background: 'rgba(255,80,60,0.1)', border: '1px solid rgba(255,80,60,0.25)', borderRadius: '10px', padding: '12px 16px', marginBottom: '16px', color: '#ff9a8a', fontFamily: 'Inter, sans-serif', fontSize: '0.82rem' }}>
+                                {error}
+                            </div>
+                        )}
+                        <AnimatePresence>
+                            {mensajes.map((msg, i) => <Burbuja key={i} msg={msg} modoYoPasado={false} eraActiva={null} />)}
+                        </AnimatePresence>
+                        <AnimatePresence>
+                            {iaEscribe && <TypingIndicator modoYoPasado={false} eraActiva={null} />}
+                        </AnimatePresence>
+                        <div ref={bottomRef} />
+                    </div>
+                </div>
+
+                {/* Input */}
+                <div style={{ padding: '14px 20px', borderTop: '1px solid rgba(74,185,100,0.15)', background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(16px)' }}>
+                    <div style={{ maxWidth: '680px', margin: '0 auto', display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
+                        <textarea
+                            ref={inputRef} rows={1} value={input}
+                            onChange={e => setInput(e.target.value)} onKeyDown={handleKey}
+                            disabled={cargando}
+                            placeholder="Cuéntale algo más a Rocco…"
+                            style={{
+                                flex: 1, fontFamily: 'Inter, sans-serif', fontSize: '0.92rem',
+                                lineHeight: 1.5, padding: '12px 18px', borderRadius: '24px',
+                                border: `1.5px solid ${input.trim() ? 'rgba(74,185,100,0.5)' : 'rgba(74,185,100,0.15)'}`,
+                                background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(8px)',
+                                outline: 'none', resize: 'none', color: '#d8f0d8',
+                                maxHeight: '120px', overflowY: 'auto', transition: 'border-color 0.2s',
+                            }}
+                        />
+                        <motion.button
+                            onClick={enviarMensaje} disabled={!input.trim() || cargando}
+                            whileHover={input.trim() && !cargando ? { scale: 1.1, y: -2 } : {}}
+                            whileTap={input.trim() && !cargando ? { scale: 0.9 } : {}}
+                            style={{
+                                width: '46px', height: '46px', borderRadius: '50%', border: 'none', flexShrink: 0,
+                                cursor: input.trim() && !cargando ? 'pointer' : 'not-allowed',
+                                background: input.trim() && !cargando ? 'linear-gradient(135deg,#3a8f50,#2a6a38)' : 'rgba(255,255,255,0.08)',
+                                color: input.trim() && !cargando ? '#fff' : '#3a6a40',
+                                fontSize: '1.3rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                boxShadow: input.trim() && !cargando ? '0 4px 16px rgba(40,140,60,0.5)' : 'none',
+                                transition: 'all 0.2s',
+                            }}
+                        >↑</motion.button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // ── AVATARES LAYOUT ───────────────────────────────────────────────────
+    return (
+        <div style={{ minHeight: 'calc(100vh - 57px)', display: 'flex', flexDirection: 'column', background: 'linear-gradient(160deg,#101010 0%,#181818 50%,#101010 100%)' }}>
+
+            {/* Header */}
             <header style={{
-                padding: modoYoPasado ? '18px 24px' : '20px 24px',
-                display: 'flex', alignItems: 'center', gap: '16px',
-                borderBottom: `1px solid ${theme.headerBorder}`,
-                background: theme.headerBg,
-                backdropFilter: 'blur(16px)',
+                padding: '18px 24px', display: 'flex', alignItems: 'center', gap: '14px',
+                borderBottom: `1px solid ${eraActiva.ring}28`,
+                background: 'rgba(20,20,20,0.8)', backdropFilter: 'blur(16px)',
                 position: 'sticky', top: 0, zIndex: 10,
             }}>
-                {modoYoPasado
-                    ? <EraAvatar era={eraActiva} isLoading={iaEscribe} size={56} />
-                    : <RoccoAvatar isLoading={iaEscribe} size={56} />
-                }
+                <EraAvatar era={eraActiva} isLoading={iaEscribe} size={52} />
                 <div style={{ flex: 1 }}>
                     <h2 style={{
                         fontFamily: 'Playfair Display, Georgia, serif',
-                        fontSize: '1.2rem', fontWeight: 600,
-                        color: modoYoPasado ? '#1a1208' : '#d4f0d4',
-                        margin: 0, lineHeight: 1.2,
+                        fontSize: '1.15rem', fontWeight: 600,
+                        color: '#e8e8e0', margin: 0,
                     }}>
-                        {modoYoPasado ? `${eraActiva.icon} ${eraActiva.label}` : '🐊 Charla con Rocco'}
+                        {eraActiva.avatar} {eraActiva.label}
+                        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.7rem', color: `${eraActiva.ring}aa`, marginLeft: '8px', fontWeight: 400 }}>
+                            {eraActiva.year}
+                        </span>
                     </h2>
-                    <p style={{
-                        fontFamily: 'Inter, sans-serif', fontSize: '0.65rem',
-                        color: modoYoPasado ? '#9a8060' : '#4daa6080',
-                        textTransform: 'uppercase', letterSpacing: '0.14em',
-                        margin: '3px 0 0',
-                    }}>
-                        {modoYoPasado ? eraActiva.description : hoy}
+                    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.62rem', color: '#606058', textTransform: 'uppercase', letterSpacing: '0.14em', margin: '3px 0 0' }}>
+                        {eraActiva.description}
                     </p>
-                </div>
-                {/* Status chip */}
-                <div style={{
-                    fontFamily: 'Inter, sans-serif', fontSize: '0.68rem',
-                    color: theme.accentColor,
-                    background: `${theme.accentColor}18`,
-                    border: `1px solid ${theme.accentColor}30`,
-                    padding: '5px 12px', borderRadius: '999px',
-                    letterSpacing: '0.03em',
-                }}>
-                    {modoYoPasado ? 'Voz de tu pasado' : 'IA · Charla libre'}
                 </div>
             </header>
 
-            {/* ── ERA SELECTOR (Mi Yo Pasado only) ─────────────────────── */}
-            {modoYoPasado && (
-                <div style={{
-                    padding: '12px 24px',
-                    background: 'rgba(255,255,255,0.5)',
-                    backdropFilter: 'blur(8px)',
-                    borderBottom: `1px solid ${eraActiva.bubbleBorder}`,
-                    display: 'flex', gap: '10px', overflowX: 'auto',
-                    scrollbarWidth: 'none',
-                }}>
-                    {ERAS.map(era => {
-                        const active = eraActiva.id === era.id;
-                        return (
-                            <motion.button
-                                key={era.id}
-                                onClick={() => setEraActiva(era)}
-                                whileHover={{ y: -2 }}
-                                whileTap={{ scale: 0.94 }}
-                                style={{
-                                    display: 'flex', alignItems: 'center', gap: '8px',
-                                    padding: '8px 14px', borderRadius: '999px',
-                                    border: `1.5px solid ${active ? era.ring : '#d0c5ae'}`,
-                                    background: active ? era.avatarBg : 'rgba(255,255,255,0.7)',
-                                    color: active ? '#fff' : '#7a6840',
-                                    fontFamily: 'Inter, sans-serif', fontSize: '0.78rem',
-                                    cursor: 'pointer', whiteSpace: 'nowrap',
-                                    boxShadow: active ? `0 3px 12px ${era.ring}55` : 'none',
-                                    transition: 'all 0.22s',
-                                }}
-                            >
-                                <span style={{ fontSize: '1.1rem' }}>{era.avatar}</span>
-                                <span>{era.label}</span>
-                            </motion.button>
-                        );
-                    })}
-                </div>
-            )}
-
-            {/* ── CHAT AREA ────────────────────────────────────────────── */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: '28px 20px' }}>
-                <div style={{ maxWidth: '700px', margin: '0 auto' }}>
-
-                    {/* Diary card for Rocco */}
-                    {!modoYoPasado && entradaGuardada && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
+            {/* Era selector — sober, dark */}
+            <div style={{
+                padding: '12px 24px',
+                background: 'rgba(0,0,0,0.4)',
+                borderBottom: `1px solid ${eraActiva.ring}20`,
+                display: 'flex', gap: '8px', overflowX: 'auto', scrollbarWidth: 'none',
+            }}>
+                {ERAS.map(era => {
+                    const active = eraActiva.id === era.id;
+                    return (
+                        <motion.button
+                            key={era.id}
+                            onClick={() => setEraActiva(era)}
+                            whileHover={{ y: -2 }}
+                            whileTap={{ scale: 0.93 }}
                             style={{
-                                background: 'rgba(255,255,255,0.07)',
-                                backdropFilter: 'blur(12px)',
-                                border: '1px solid rgba(74,185,100,0.2)',
-                                borderLeft: '3px solid #4daa60',
-                                borderRadius: '4px 12px 12px 4px',
-                                padding: '14px 18px', marginBottom: '28px',
+                                display: 'flex', alignItems: 'center', gap: '7px',
+                                padding: '8px 14px', borderRadius: '10px',
+                                border: `1.5px solid ${active ? era.ring : '#303030'}`,
+                                background: active ? `${era.ring}22` : 'rgba(255,255,255,0.04)',
+                                color: active ? era.ring : '#5a5a50',
+                                fontFamily: 'Inter, sans-serif', fontSize: '0.77rem', fontWeight: active ? 600 : 400,
+                                cursor: 'pointer', whiteSpace: 'nowrap',
+                                boxShadow: active ? `0 2px 12px ${era.ring}33` : 'none',
+                                transition: 'all 0.22s',
                             }}
                         >
-                            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.58rem', textTransform: 'uppercase', letterSpacing: '0.16em', color: '#4daa60', marginBottom: '6px' }}>
-                                📖 Tu entrada de hoy
-                            </p>
-                            <p style={{
-                                fontFamily: 'Playfair Display, Georgia, serif',
-                                fontSize: '0.9rem', lineHeight: 1.65, color: '#c8e8c8', margin: 0,
-                                display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-                            }}>
-                                {entradaGuardada.content}
-                            </p>
-                        </motion.div>
-                    )}
+                            <span style={{ fontSize: '1rem' }}>{era.avatar}</span>
+                            <div>
+                                <div style={{ lineHeight: 1.2 }}>{era.label}</div>
+                                <div style={{ fontSize: '0.6rem', color: active ? `${era.ring}88` : '#383830', lineHeight: 1 }}>{era.year}</div>
+                            </div>
+                        </motion.button>
+                    );
+                })}
+            </div>
 
-                    {/* Error */}
+            {/* Chat area */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '24px 20px' }}>
+                <div style={{ maxWidth: '680px', margin: '0 auto' }}>
+                    {/* Avatar progress */}
+                    <AvatarProgress perfil={perfil} entryCount={entryCount} />
+
                     {error && (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                            style={{
-                                fontFamily: 'Inter, sans-serif', fontSize: '0.82rem',
-                                color: modoYoPasado ? '#9a3a2a' : '#ff9a8a',
-                                background: modoYoPasado ? '#fdf0ec' : 'rgba(255,80,60,0.1)',
-                                border: `1px solid ${modoYoPasado ? '#f0c0b0' : 'rgba(255,80,60,0.25)'}`,
-                                borderRadius: '10px', padding: '12px 16px', marginBottom: '16px',
-                            }}>
+                        <div style={{ background: 'rgba(180,60,40,0.12)', border: '1px solid rgba(180,60,40,0.25)', borderRadius: '10px', padding: '12px 16px', marginBottom: '16px', color: '#d08070', fontFamily: 'Inter, sans-serif', fontSize: '0.82rem' }}>
                             {error}
-                        </motion.div>
+                        </div>
                     )}
-
-                    {/* Messages */}
                     <AnimatePresence>
-                        {mensajes.map((msg, i) => (
-                            <Burbuja key={i} msg={msg} modoYoPasado={modoYoPasado} eraActiva={eraActiva} />
-                        ))}
+                        {mensajes.map((msg, i) => <Burbuja key={i} msg={msg} modoYoPasado={true} eraActiva={eraActiva} />)}
                     </AnimatePresence>
-
                     <AnimatePresence>
-                        {iaEscribe && <TypingIndicator modoYoPasado={modoYoPasado} eraActiva={eraActiva} />}
+                        {iaEscribe && <TypingIndicator modoYoPasado={true} eraActiva={eraActiva} />}
                     </AnimatePresence>
-
                     <div ref={bottomRef} />
                 </div>
             </div>
 
-            {/* ── INPUT BAR ────────────────────────────────────────────── */}
+            {/* Input */}
             <div style={{
                 padding: '14px 20px',
-                borderTop: `1px solid ${theme.headerBorder}`,
-                background: theme.headerBg,
-                backdropFilter: 'blur(16px)',
+                borderTop: `1px solid ${eraActiva.ring}20`,
+                background: 'rgba(20,20,20,0.8)', backdropFilter: 'blur(16px)',
             }}>
-                <div style={{ maxWidth: '700px', margin: '0 auto', display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
+                <div style={{ maxWidth: '680px', margin: '0 auto', display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
                     <textarea
-                        ref={inputRef}
-                        rows={1}
-                        value={input}
-                        onChange={e => setInput(e.target.value)}
-                        onKeyDown={handleKey}
+                        ref={inputRef} rows={1} value={input}
+                        onChange={e => setInput(e.target.value)} onKeyDown={handleKey}
                         disabled={cargando}
-                        placeholder={modoYoPasado ? `Pregúntale algo a tu yo de ${eraActiva.label.split('(')[0].trim()}…` : 'Cuéntale algo más a Rocco…'}
+                        placeholder={`Pregúntale algo a tu yo de ${eraActiva.label}…`}
                         style={{
-                            flex: 1,
-                            fontFamily: 'Inter, sans-serif', fontSize: '0.92rem',
-                            lineHeight: 1.5, padding: '12px 18px',
-                            borderRadius: '24px',
-                            border: `1.5px solid ${input.trim() ? theme.accentColor + '60' : theme.inputBorder}`,
-                            background: theme.inputBg,
-                            backdropFilter: 'blur(8px)',
-                            outline: 'none', resize: 'none',
-                            color: modoYoPasado ? '#1a1208' : '#e8f5e8',
-                            maxHeight: '120px', overflowY: 'auto',
-                            transition: 'border-color 0.2s',
+                            flex: 1, fontFamily: 'Inter, sans-serif', fontSize: '0.92rem',
+                            lineHeight: 1.5, padding: '12px 18px', borderRadius: '12px',
+                            border: `1.5px solid ${input.trim() ? eraActiva.ring + '60' : '#303030'}`,
+                            background: 'rgba(255,255,255,0.05)',
+                            outline: 'none', resize: 'none', color: '#d8d8c8',
+                            maxHeight: '120px', overflowY: 'auto', transition: 'border-color 0.2s',
                         }}
                     />
                     <motion.button
-                        onClick={enviarMensaje}
-                        disabled={!input.trim() || cargando}
-                        whileHover={input.trim() && !cargando ? { scale: 1.08, y: -2 } : {}}
+                        onClick={enviarMensaje} disabled={!input.trim() || cargando}
+                        whileHover={input.trim() && !cargando ? { scale: 1.1, y: -2 } : {}}
                         whileTap={input.trim() && !cargando ? { scale: 0.9 } : {}}
                         style={{
-                            width: '46px', height: '46px', borderRadius: '50%',
-                            border: 'none',
+                            width: '46px', height: '46px', borderRadius: '12px', border: 'none', flexShrink: 0,
                             cursor: input.trim() && !cargando ? 'pointer' : 'not-allowed',
-                            background: input.trim() && !cargando ? theme.sendBg : (modoYoPasado ? '#e8dfc6' : 'rgba(255,255,255,0.1)'),
-                            color: input.trim() && !cargando ? '#fff' : (modoYoPasado ? '#b8a890' : '#3a6a40'),
+                            background: input.trim() && !cargando ? eraActiva.avatarBg : '#1a1a1a',
+                            border: `1.5px solid ${input.trim() && !cargando ? eraActiva.ring : '#303030'}`,
+                            color: input.trim() && !cargando ? eraActiva.ring : '#404040',
                             fontSize: '1.3rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            flexShrink: 0,
-                            boxShadow: input.trim() && !cargando ? `0 4px 16px ${theme.accentColor}55` : 'none',
+                            boxShadow: input.trim() && !cargando ? `0 4px 16px ${eraActiva.ring}44` : 'none',
                             transition: 'all 0.2s',
                         }}
-                    >
-                        ↑
-                    </motion.button>
+                    >↑</motion.button>
                 </div>
             </div>
         </div>

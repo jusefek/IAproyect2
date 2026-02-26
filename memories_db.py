@@ -2,7 +2,7 @@
 memories_db.py
 --------------
 SQLite persistence layer for AI of Memories.
-Stores: user profile, journal entries, and structured knowledge graph tags.
+Stores: users, user profile, journal entries, and structured knowledge graph tags.
 All data belongs to the user and stays on their local machine.
 """
 
@@ -24,11 +24,27 @@ def init_db():
     """Create all tables if they don't exist."""
     with get_connection() as conn:
         conn.executescript("""
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                created_at TEXT NOT NULL
+            );
+
             CREATE TABLE IF NOT EXISTS profile (
                 id INTEGER PRIMARY KEY,
                 key TEXT UNIQUE NOT NULL,
                 value TEXT NOT NULL,
                 updated_at TEXT NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS quick_profile (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                alias TEXT,
+                ocupacion TEXT,
+                circulo TEXT,
+                foco TEXT,
+                created_at TEXT NOT NULL
             );
 
             CREATE TABLE IF NOT EXISTS journal_entries (
@@ -49,7 +65,70 @@ def init_db():
         """)
 
 
-# ── Profile ──────────────────────────────────────────────────────────────────
+# ── Users ─────────────────────────────────────────────────────────────────────
+
+def create_user(username: str) -> dict:
+    """Create a user if it doesn't exist, then return it."""
+    now = datetime.now().isoformat()
+    with get_connection() as conn:
+        conn.execute(
+            "INSERT OR IGNORE INTO users (username, created_at) VALUES (?, ?)",
+            (username, now)
+        )
+        row = conn.execute(
+            "SELECT * FROM users WHERE username = ?", (username,)
+        ).fetchone()
+    return dict(row)
+
+
+def get_user(username: str) -> dict | None:
+    with get_connection() as conn:
+        row = conn.execute(
+            "SELECT * FROM users WHERE username = ?", (username,)
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def list_users() -> list[dict]:
+    with get_connection() as conn:
+        rows = conn.execute(
+            "SELECT * FROM users ORDER BY created_at ASC"
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+# ── Quick Profile ─────────────────────────────────────────────────────────────
+
+def user_has_quick_profile(username: str) -> bool:
+    with get_connection() as conn:
+        row = conn.execute(
+            "SELECT id FROM quick_profile WHERE username = ?", (username,)
+        ).fetchone()
+    return row is not None
+
+
+def set_quick_profile(username: str, alias: str, ocupacion: str, circulo: str, foco: str):
+    now = datetime.now().isoformat()
+    with get_connection() as conn:
+        conn.execute(
+            """INSERT INTO quick_profile (username, alias, ocupacion, circulo, foco, created_at)
+               VALUES (?, ?, ?, ?, ?, ?)
+               ON CONFLICT(username) DO UPDATE SET
+                 alias=excluded.alias, ocupacion=excluded.ocupacion,
+                 circulo=excluded.circulo, foco=excluded.foco""",
+            (username, alias, ocupacion, circulo, foco, now)
+        )
+
+
+def get_quick_profile(username: str) -> dict:
+    with get_connection() as conn:
+        row = conn.execute(
+            "SELECT * FROM quick_profile WHERE username = ?", (username,)
+        ).fetchone()
+    return dict(row) if row else {}
+
+
+# ── Profile ───────────────────────────────────────────────────────────────────
 
 def set_profile(key: str, value: str):
     now = datetime.now().isoformat()

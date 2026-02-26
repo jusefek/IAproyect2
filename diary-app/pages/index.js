@@ -1,6 +1,11 @@
+/**
+ * pages/index.js — KROMO
+ * Main orchestrator: auth → quick profile → onboarding → app
+ */
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import LockScreen from '../components/LockScreen';
+import RegisterScreen from '../components/RegisterScreen';
+import QuickProfileForm from '../components/QuickProfileForm';
 import OnboardingFlow from '../components/OnboardingFlow';
 import DiaryPage from '../components/DiaryPage';
 import PastSelfMode from '../components/PastSelfMode';
@@ -11,6 +16,9 @@ const MODOS = [
   { id: 'rocco', icono: '🐊', label: 'Charla con Rocco' },
   { id: 'pasado', icono: '🕰️', label: 'Mi Yo Pasado' },
 ];
+
+// App name constant
+const APP_NAME = 'KROMO';
 
 function NavBar({ modoActual, onCambiar, entradaDisponible }) {
   return (
@@ -28,7 +36,6 @@ function NavBar({ modoActual, onCambiar, entradaDisponible }) {
     }}>
       {MODOS.map(m => {
         const activo = modoActual === m.id;
-        // "Charla con Rocco" solo activo si hay entrada guardada
         const deshabilitado = m.id === 'rocco' && !entradaDisponible;
         return (
           <motion.button
@@ -182,55 +189,78 @@ function FloatingApiKey() {
 
 // ── Orquestador principal ────────────────────────────────────────────────────
 export default function Home() {
+  // Estados: 'cargando' | 'registro' | 'perfil_rapido' | 'onboarding' | 'app'
   const [estadoApp, setEstadoApp] = useState('cargando');
   const [perfil, setPerfil] = useState({});
-  const [modo, setModo] = useState('diario');   // diario | rocco | pasado
+  const [usuarioActual, setUsuarioActual] = useState('');
+  const [modo, setModo] = useState('diario');
   const [ultimaEntrada, setUltimaEntrada] = useState(null);
 
-  // Cargar perfil y entradas al iniciar
+  // Cargar perfil al iniciar
   useEffect(() => {
-    // Perfil
-    fetch('/api/profile')
-      .then(r => r.json())
-      .then(prof => {
-        setPerfil(prof);
-        setEstadoApp(prof.onboardingComplete ? 'bloqueada' : 'onboarding');
-      })
-      .catch(() => setEstadoApp('onboarding'));
+    // Always show login first — auth happens per session
+    setEstadoApp('registro');
 
-    // Última entrada (para habilitar Rocco)
+    // Pre-load last entry (for enabling Rocco)
     fetch('/api/entries')
       .then(r => r.json())
       .then(entries => {
         if (entries && entries.length > 0) {
           setUltimaEntrada(entries[entries.length - 1]);
         }
-      });
+      })
+      .catch(() => { });
   }, []);
 
-  // Callbacks
-  const alDesbloquear = () => setEstadoApp('app');
+  // ── Callback: authenticated user ─────────────────────────────────────────
+  const alRegistrar = async (username) => {
+    setUsuarioActual(username);
 
+    // Merge username into existing profile
+    const res = await fetch('/api/profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username }),
+    });
+    const prof = await res.json();
+    setPerfil(prof);
+
+    // Route: quick profile → onboarding → app
+    if (prof.quickProfileComplete) {
+      setEstadoApp(prof.onboardingComplete ? 'app' : 'onboarding');
+    } else {
+      setEstadoApp('perfil_rapido');
+    }
+  };
+
+  // ── Callback: formulario rápido completado ────────────────────────────────
+  const alCompletarPerfilRapido = (payload) => {
+    const updatedPerfil = { ...perfil, ...payload };
+    setPerfil(updatedPerfil);
+    setEstadoApp(updatedPerfil.onboardingComplete ? 'app' : 'onboarding');
+  };
+
+  // ── Callback: onboarding completado ──────────────────────────────────────
   const alCompletarOnboarding = () => {
     fetch('/api/profile')
       .then(r => r.json())
       .then(prof => { setPerfil(prof); setEstadoApp('app'); });
   };
 
-  // Cuando se guarda una entrada: ir a Rocco automáticamente
+  // ── Cuando se guarda una entrada ──────────────────────────────────────────
   const alGuardarEntrada = (entrada) => {
     setUltimaEntrada(entrada);
     setModo('rocco');
   };
 
-  // ── Pantalla de carga ─────────────────────────────────────────────
+  // ── Pantalla de carga ─────────────────────────────────────────────────────
   if (estadoApp === 'cargando') {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FDFBF7' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0d0b07' }}>
         <motion.div
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 2, repeat: Infinity }}
-          style={{ fontFamily: 'Playfair Display, serif', fontSize: '3rem', color: '#d4c9b0' }}
+          style={{ fontFamily: 'Playfair Display, serif', fontSize: '3rem', color: '#4a3820' }}
         >
           📖
         </motion.div>
@@ -238,21 +268,31 @@ export default function Home() {
     );
   }
 
-  // ── Pantalla de bloqueo ───────────────────────────────────────────
-  if (estadoApp === 'bloqueada') {
-    return <LockScreen onUnlock={alDesbloquear} />;
+  // ── Pantalla de registro / acceso ─────────────────────────────────────────
+  if (estadoApp === 'registro') {
+    return <RegisterScreen onRegister={alRegistrar} />;
   }
 
-  // ── Onboarding ────────────────────────────────────────────────────
+  // ── Formulario rápido (primera vez) ──────────────────────────────────────
+  if (estadoApp === 'perfil_rapido') {
+    return (
+      <QuickProfileForm
+        username={usuarioActual}
+        onComplete={alCompletarPerfilRapido}
+      />
+    );
+  }
+
+  // ── Onboarding (preguntas profundas) ──────────────────────────────────────
   if (estadoApp === 'onboarding') {
     return <OnboardingFlow onComplete={alCompletarOnboarding} />;
   }
 
-  // ── App principal (3 modos) ───────────────────────────────────────
+  // ── App principal (3 modos) ───────────────────────────────────────────────
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#fdfbf7' }}>
 
-      {/* Barra de navegación persistente */}
+      {/* Barra de navegación */}
       <NavBar
         modoActual={modo}
         onCambiar={setModo}

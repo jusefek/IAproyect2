@@ -604,5 +604,25 @@
     "aiResponse": "Hola Jose, Rocco aquí. A veces, el \"nada\" esconde un universo. ¿Te apetece explorar ese \"nada\" un poco más?\n",
     "tags": [],
     "createdAt": "2026-02-23T18:32:19.857Z"
+  },
+  {
+    "id": 1772128381715,
+    "content": "Mi dia hoy me he ido a correr por la montaña en sagunto",
+    "aiResponse": "¡Hola, Jose! Qué bien que hayas aprovechado el día para conectar con la naturaleza. ¿Qué tal te ha sentado correr por Sagunto?\n",
+    "tags": [
+      {
+        "type": "Event",
+        "value": "ir a correr"
+      },
+      {
+        "type": "Entity",
+        "value": "montaña"
+      },
+      {
+        "type": "Entity",
+        "value": "Sagunto"
+      }
+    ],
+    "createdAt": "2026-02-26T17:53:01.715Z"
   }
 ]

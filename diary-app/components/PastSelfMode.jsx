@@ -35,17 +35,26 @@ function RoccoAvatar({ isLoading, size = 60 }) {
 }
 
 // ── Avatar del Yo Pasado ──────────────────────────────────────────────────────
-function YoAvatar({ isLoading, size = 60 }) {
+function YoAvatar({ isLoading, size = 60, label = 'Tú (pasado)' }) {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
             <motion.div
-                animate={isLoading ? { opacity: [1, 0.5, 1] } : { opacity: 1 }}
-                transition={isLoading ? { duration: 1.2, repeat: Infinity } : {}}
-                style={{ width: size, height: size, borderRadius: '50%', background: 'linear-gradient(135deg, #c8933a, #8a5e1a)', boxShadow: '0 4px 16px rgba(200,147,58,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: size > 40 ? '1.4rem' : '1rem' }}
+                animate={isLoading
+                    ? { scale: [1, 1.08, 1], opacity: [1, 0.7, 1] }
+                    : { scale: 1, opacity: 1 }
+                }
+                transition={isLoading ? { duration: 1.1, repeat: Infinity } : {}}
+                style={{
+                    width: size, height: size, borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #d4a045 0%, #8a5e1a 100%)',
+                    boxShadow: '0 0 0 2.5px #C8933A55, 0 4px 16px rgba(200,147,58,0.4)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    flexShrink: 0, fontSize: size > 40 ? '1.5rem' : '1rem',
+                }}
             >
-                🪞
+                🧑
             </motion.div>
-            {size >= 48 && <span style={{ fontFamily: 'Caveat, cursive', fontSize: '0.75rem', color: '#8a5e1a', fontWeight: 600 }}>Tú</span>}
+            {size >= 48 && <span style={{ fontFamily: 'Caveat, cursive', fontSize: '0.75rem', color: '#8a5e1a', fontWeight: 600 }}>{label}</span>}
         </div>
     );
 }
@@ -87,11 +96,14 @@ function Burbuja({ msg, modoYoPasado }) {
     // Usuario
     return (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}
-            style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
-            <div style={{ maxWidth: '74%', background: 'linear-gradient(135deg, #d4a045, #c8933a)', borderRadius: '14px 2px 14px 14px', padding: '10px 16px', boxShadow: '0 2px 10px rgba(200,147,58,0.25)' }}>
-                <p style={{ fontFamily: 'Playfair Display, Georgia, serif', fontSize: '0.95rem', lineHeight: 1.55, color: '#fff', margin: 0 }}>
+            style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', gap: '8px', marginBottom: '16px' }}>
+            <div style={{ maxWidth: '72%', background: 'linear-gradient(135deg, #d4a045, #c8933a)', borderRadius: '14px 2px 14px 14px', padding: '10px 16px', boxShadow: '0 2px 10px rgba(200,147,58,0.25)' }}>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.93rem', lineHeight: 1.55, color: '#fff', margin: 0 }}>
                     {msg.content}
                 </p>
+            </div>
+            <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#d4a045,#8a5e1a)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', flexShrink: 0, boxShadow: '0 2px 6px rgba(200,147,58,0.3)' }}>
+                🧑
             </div>
         </motion.div>
     );
@@ -171,10 +183,10 @@ export default function PastSelfMode({ entradaGuardada, perfil, onVolver, modoYo
 
     const iniciarConversacion = useCallback(async (entrada) => {
         const msgInicio = modoYoPasado
-            ? `__INICIO_PASADO__: El usuario quiere hablar con su yo pasado de la época ${eraActiva.label}. Salúdalo con tu propia voz de ese entonces y pregúntale qué quiere explorar.`
+            ? `__INICIO_PASADO__: El usuario quiere hablar con su yo pasado de la época ${eraActiva.label}. Habla en primera persona, como si fueras ese yo de entonces. Sin presentaciones formales, simplemente empieza a recordar algo de esa época y pregunta qué quiere explorar.`
             : entrada
-                ? `__INICIO__: El usuario acaba de escribir esta entrada en su diario: "${entrada.content}". Preséntate brevemente y haz tu primera pregunta para extraer más detalles.`
-                : '__INICIO__: El usuario ha abierto el chat. Preséntate y pídele que te cuente algo.';
+                ? `Reacciona a esto que acabo de escribir en mi diario: "${entrada.content.slice(0, 300)}". Reacciona directamente. Sin presentarte. Sin formalismos.`
+                : 'Hola. Aquí estoy. Cuéntame algo.';
 
         setMensajes([]);
         setError('');

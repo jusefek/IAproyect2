@@ -624,5 +624,17 @@
       }
     ],
     "createdAt": "2026-02-26T17:53:01.715Z"
+  },
+  {
+    "id": 1772130567700,
+    "content": "hola hoy he ido a correr",
+    "aiResponse": "¡Hola, Jose! Qué bueno que te hayas movido un poco. ¿Qué tal te has sentido al volver a correr en Valencia?\n",
+    "tags": [
+      {
+        "type": "Event",
+        "value": "corrido"
+      }
+    ],
+    "createdAt": "2026-02-26T18:29:27.700Z"
   }
 ]

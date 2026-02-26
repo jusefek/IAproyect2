@@ -92,7 +92,7 @@ export default function DiaryPage({ profile, onSaved }) {
                         lineHeight: 1.15,
                         letterSpacing: '-0.015em',
                     }}>
-                        Diario de {nombre}
+                        Diario
                     </h1>
                     <div style={{ height: '1px', background: 'linear-gradient(to right, #d4c9b0, transparent)', marginTop: '20px' }} />
                 </header>

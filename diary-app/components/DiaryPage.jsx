@@ -10,7 +10,62 @@ export default function DiaryPage({ profile, onSaved }) {
     const [draft, setDraft] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [isListening, setIsListening] = useState(false);
     const textareaRef = useRef(null);
+    const recognitionRef = useRef(null);
+    const finalTranscriptRef = useRef('');
+
+    const toggleListening = () => {
+        if (isListening) {
+            if (recognitionRef.current) {
+                recognitionRef.current.stop();
+            }
+            return;
+        }
+
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            setError('Tu navegador no soporta dictado por voz.');
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'es-ES';
+        recognition.interimResults = true;
+        recognition.continuous = true;
+        recognitionRef.current = recognition;
+
+        finalTranscriptRef.current = draft ? draft + (draft.endsWith(' ') || draft.endsWith('\n') ? '' : ' ') : '';
+
+        recognition.onstart = () => setIsListening(true);
+        recognition.onend = () => setIsListening(false);
+
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscriptRef.current += event.results[i][0].transcript + ' ';
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
+                }
+            }
+            setDraft(finalTranscriptRef.current + interimTranscript);
+        };
+
+        recognition.onerror = (e) => {
+            console.error('Speech recognition error', e);
+            setIsListening(false);
+            if (e.error === 'not-allowed') {
+                setError('Permiso de micrófono denegado. Por favor, permítelo en tu navegador.');
+            }
+        };
+
+        try {
+            recognition.start();
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     // Auto-crecimiento del textarea
     useEffect(() => {
@@ -173,8 +228,50 @@ export default function DiaryPage({ profile, onSaved }) {
                     )}
                 </AnimatePresence>
 
-                {/* ── Botón principal ─────────────────────────────────── */}
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px' }}>
+                {/* ── Botones ─────────────────────────────────── */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '24px' }}>
+                    {/* Botón de voz */}
+                    <div style={{ position: 'relative' }}>
+                        <motion.button
+                            onClick={toggleListening}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            title={isListening ? "Detener dictado" : "Dictar por voz"}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '46px',
+                                height: '46px',
+                                borderRadius: '50%',
+                                border: isListening ? '2px solid #c0604a' : '1.5px solid #d4c9b0',
+                                background: isListening ? 'rgba(192, 96, 74, 0.08)' : '#fff',
+                                color: isListening ? '#c0604a' : '#8a7b60',
+                                cursor: 'pointer',
+                                boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+                                transition: 'all 0.2s',
+                            }}
+                        >
+                            <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>{isListening ? '⏹' : '🎤'}</span>
+                            {isListening && (
+                                <motion.span
+                                    animate={{ opacity: [1, 0.5, 1] }}
+                                    transition={{ repeat: Infinity, duration: 1.5 }}
+                                    style={{
+                                        position: 'absolute',
+                                        width: '10px',
+                                        height: '10px',
+                                        background: '#c0604a',
+                                        borderRadius: '50%',
+                                        right: '-2px',
+                                        top: '-2px',
+                                        boxShadow: '0 0 4px rgba(192,96,74,0.6)'
+                                    }}
+                                />
+                            )}
+                        </motion.button>
+                    </div>
+
                     <motion.button
                         onClick={handleGuardar}
                         disabled={!draft.trim() || loading}

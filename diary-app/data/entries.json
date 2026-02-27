@@ -716,5 +716,204 @@
       }
     ],
     "createdAt": "2026-02-26T18:29:27.700Z"
+  },
+  {
+    "id": 1772216191018,
+    "content": "hola hoy no me ha pasado nada así muy muy importante pero la verdad es que estoy muy feliz de poder seguir desarrollando esta app y me están interesando mucho sobre sobre mi día de hoy nada he hecho doble sesión de entrenamiento e ir al Jimmy a natación y la verdad es que se me estoy poniendo fuerte tú a ver si a ver si continuamos así poquito a poquito",
+    "aiResponse": "¡Hola, Jose! Me alegra mucho oírte tan contento con el desarrollo de tu app. Y, ¡vaya!, doble sesión de entrenamiento, ¡eso sí que es dedicación! ¿Qué te motiva a mantener esa constancia?\n",
+    "tags": [
+      {
+        "type": "Sentiment/Trigger",
+        "value": "feliz (desarrollando esta app)"
+      },
+      {
+        "type": "Event",
+        "value": "doble sesión de entrenamiento"
+      },
+      {
+        "type": "Event",
+        "value": "ir al Jimmy a natación"
+      },
+      {
+        "type": "Syntax",
+        "value": "poquito a poquito"
+      }
+    ],
+    "createdAt": "2026-02-27T18:16:31.018Z"
+  },
+  {
+    "id": 1772218174760,
+    "content": "Hoy he probado la nueva versi",
+    "aiResponse": "¡Hola, Jose! Suena emocionante. ¿Qué tal te ha ido probando la nueva versión?\n",
+    "tags": [],
+    "createdAt": "2026-02-27T18:49:34.760Z"
+  },
+  {
+    "id": 1772218683365,
+    "content": "Hoy ha sido un dia muy normalito. Ahora en un rato tengo que hacer la exposición del trabajo del IA project 2. A ver que tal",
+    "aiResponse": "Hola, Jose. Un día normalito, ¿eh? Espero que la exposición del trabajo del IA Project 2 vaya de maravilla. ¿Te sientes nervioso o más bien confiado con la presentación?\n",
+    "tags": [
+      {
+        "type": "Event",
+        "value": "exposition of the IA project 2 work"
+      },
+      {
+        "type": "Syntax",
+        "value": "muy normalito"
+      }
+    ],
+    "createdAt": "2026-02-27T18:58:03.365Z"
+  },
+  {
+    "id": 1772218804877,
+    "content": "eh hoy está siendo un día muy divertido estamos de fin de semana preparándole a project a ver si conseguimos sacar buena nota y que no nos dé mucha caña a los profesores",
+    "aiResponse": "¡Hola, Jose! ¡Qué bien que el fin de semana esté siendo divertido! ¿Hay algún aspecto específico del proyecto que te esté gustando especialmente?\n",
+    "tags": [
+      {
+        "type": "Event",
+        "value": "having a fun day"
+      },
+      {
+        "type": "Event",
+        "value": "weekend preparation for project"
+      },
+      {
+        "type": "Entity",
+        "value": "project"
+      },
+      {
+        "type": "Entity",
+        "value": "profesores"
+      },
+      {
+        "type": "Sentiment/Trigger",
+        "value": "fun/day"
+      },
+      {
+        "type": "Sentiment/Trigger",
+        "value": "hope/good grade"
+      },
+      {
+        "type": "Sentiment/Trigger",
+        "value": "anxiety/profesores"
+      }
+    ],
+    "createdAt": "2026-02-27T19:00:04.877Z"
+  },
+  {
+    "id": 1772218978008,
+    "content": "hola cómo estáis chavales estamos preparando la exposición hoy para para el Project así que espero que la disfrutéis y os parezca la interesante nuestro proyecto",
+    "aiResponse": "¡Hola, Jose! Suenas ilusionado con la exposición. ¿Qué es lo que más te entusiasma de este proyecto en particular?\n",
+    "tags": [
+      {
+        "type": "Event",
+        "value": "preparando la exposición"
+      },
+      {
+        "type": "Entity",
+        "value": "Project"
+      },
+      {
+        "type": "Syntax",
+        "value": "hola cómo estáis chavales"
+      },
+      {
+        "type": "Sentiment/Trigger",
+        "value": "espero que la disfrutéis"
+      },
+      {
+        "type": "Sentiment/Trigger",
+        "value": "os parezca la interesante"
+      }
+    ],
+    "createdAt": "2026-02-27T19:02:58.008Z"
+  },
+  {
+    "id": 1772219087521,
+    "content": "estoy preparando un vídeo para lia Project y espero que la gente que esté viendo este vídeo lo disfrute así que ese es mi diario de hoy",
+    "aiResponse": "¡Hola, Jose! Suena a que estás poniendo mucho cariño en este proyecto. ¿Qué es lo que más te entusiasma de LIA Project?\n",
+    "tags": [
+      {
+        "type": "Event",
+        "value": "preparing a video"
+      },
+      {
+        "type": "Entity",
+        "value": "Lia Project"
+      },
+      {
+        "type": "Sentiment/Trigger",
+        "value": "hope"
+      },
+      {
+        "type": "Syntax",
+        "value": "ese es mi diario de hoy"
+      }
+    ],
+    "createdAt": "2026-02-27T19:04:47.521Z"
+  },
+  {
+    "id": 1772219223198,
+    "content": "hoy me estoy dedicando a preparar el contenido para en nuestro proyecto de inteligencia artificial para el Máster espero que a los que estéis viendo este vídeo os guste y eso es lo que he hecho esta tarde",
+    "aiResponse": "¡Qué interesante eso del proyecto de IA! ¿Hay algún aspecto en particular del proyecto que te tenga especialmente ilusionado en este momento?\n",
+    "tags": [
+      {
+        "type": "Event",
+        "value": "preparar el contenido para en nuestro proyecto de inteligencia artificial para el Máster"
+      },
+      {
+        "type": "Entity",
+        "value": "Máster"
+      },
+      {
+        "type": "Entity",
+        "value": "inteligencia artificial"
+      }
+    ],
+    "createdAt": "2026-02-27T19:07:03.198Z"
+  },
+  {
+    "id": 1772219348847,
+    "content": "hola te voy a contar cómo ha sido mi tarde he estado trabajando en el proyecto de inteligencia artificial y estoy ahora grabando un vídeo para para la presentación el próximo jueves que viene así que nada eso ha sido todo",
+    "aiResponse": "¡Hola, Jose! Suena a que estás invirtiendo mucha energía en este proyecto de IA. ¿Cómo te sientes al grabar el vídeo de presentación?\n",
+    "tags": [
+      {
+        "type": "Event",
+        "value": "Trabajando en el proyecto de inteligencia artificial"
+      },
+      {
+        "type": "Event",
+        "value": "Grabando un vídeo para la presentación"
+      },
+      {
+        "type": "Event",
+        "value": "Presentación el próximo jueves"
+      }
+    ],
+    "createdAt": "2026-02-27T19:09:08.847Z"
+  },
+  {
+    "id": 1772219543143,
+    "content": "hola hoy estoy preparando una presentación para el próximo jueves que tendremos la exposición del proyecto de inteligencia artificial que estamos haciendo así que nada quiero que lo sepas para que saludes al público",
+    "aiResponse": "¡Hola, Jose! Parece que estás invirtiendo mucha energía en este proyecto. ¿Qué es lo que más te entusiasma de la presentación del jueves? ¡Mucha suerte!\n",
+    "tags": [
+      {
+        "type": "Event",
+        "value": "preparando una presentación"
+      },
+      {
+        "type": "Event",
+        "value": "exposición del proyecto de inteligencia artificial"
+      },
+      {
+        "type": "Entity",
+        "value": "público"
+      },
+      {
+        "type": "Syntax",
+        "value": "hola"
+      }
+    ],
+    "createdAt": "2026-02-27T19:12:23.143Z"
   }
 ]
